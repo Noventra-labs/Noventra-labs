@@ -2,13 +2,9 @@
 
 <div align="center">
 
-```
-┌─────────────────────────────────────────────┐
-│  ██  ██  │                                  │
-│  ██  ░░  │   N O V E N T R A   L A B S      │
-│  ░░  ██  │   From 'we think' to 'we know'   │
-└─────────────────────────────────────────────┘
-```
+
+![Logo](https://raw.githubusercontent.com/Noventra-labs/Noventra-labs/main/logo-wordmark.svg)
+
 
 **We find gaps between what the market needs and what exists — then ship the products to fill them.**
 
