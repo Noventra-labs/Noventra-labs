@@ -1,0 +1,1035 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Noventra Labs — From 'we think' to 'we know'</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=Instrument+Serif:ital@0;1&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0a0a0b;
+    --bg-2: #111113;
+    --bg-3: #18181c;
+    --border: rgba(255,255,255,0.08);
+    --border-hover: rgba(255,255,255,0.18);
+    --text-primary: #f0ede8;
+    --text-secondary: #8a8782;
+    --text-muted: #4a4845;
+    --amber: #e8a237;
+    --amber-dim: rgba(232,162,55,0.12);
+    --amber-glow: rgba(232,162,55,0.06);
+    --font-display: 'Syne', sans-serif;
+    --font-serif: 'Instrument Serif', serif;
+    --font-mono: 'DM Mono', monospace;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text-primary);
+    font-family: var(--font-display);
+    font-size: 16px;
+    line-height: 1.6;
+    overflow-x: hidden;
+    cursor: none;
+  }
+
+  /* CUSTOM CURSOR */
+  .cursor {
+    width: 8px; height: 8px;
+    background: var(--amber);
+    border-radius: 50%;
+    position: fixed;
+    pointer-events: none;
+    z-index: 9999;
+    transition: transform 0.15s ease;
+  }
+  .cursor-ring {
+    width: 32px; height: 32px;
+    border: 1px solid rgba(232,162,55,0.4);
+    border-radius: 50%;
+    position: fixed;
+    pointer-events: none;
+    z-index: 9998;
+    transition: transform 0.35s cubic-bezier(0.25,0.46,0.45,0.94);
+  }
+
+  /* NOISE TEXTURE OVERLAY */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 1;
+    opacity: 0.4;
+  }
+
+  /* NAV */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.5rem 3rem;
+    border-bottom: 1px solid transparent;
+    transition: border-color 0.3s, background 0.3s;
+  }
+  nav.scrolled {
+    border-color: var(--border);
+    background: rgba(10,10,11,0.85);
+    backdrop-filter: blur(16px);
+  }
+  .nav-logo {
+    display: flex; align-items: center; gap: 10px;
+    text-decoration: none;
+  }
+  .logo-mark {
+    width: 32px; height: 32px;
+    position: relative;
+  }
+  .logo-mark svg { width: 100%; height: 100%; }
+  .logo-text {
+    font-size: 1.05rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    color: var(--text-primary);
+    text-transform: uppercase;
+  }
+  .nav-links {
+    display: flex; align-items: center; gap: 2.5rem;
+    list-style: none;
+  }
+  .nav-links a {
+    text-decoration: none;
+    color: var(--text-secondary);
+    font-size: 0.82rem;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    transition: color 0.2s;
+  }
+  .nav-links a:hover { color: var(--text-primary); }
+  .nav-cta {
+    padding: 0.5rem 1.25rem;
+    border: 1px solid var(--border-hover);
+    border-radius: 2px;
+    color: var(--text-primary) !important;
+    transition: border-color 0.2s, background 0.2s !important;
+  }
+  .nav-cta:hover {
+    background: var(--amber-dim) !important;
+    border-color: var(--amber) !important;
+    color: var(--amber) !important;
+  }
+
+  /* HERO */
+  .hero {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 0 3rem 5rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero-grid-bg {
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
+    background-size: 60px 60px;
+    mask-image: radial-gradient(ellipse 80% 60% at 50% 0%, black 30%, transparent 100%);
+  }
+
+  .hero-accent {
+    position: absolute;
+    top: 15%;
+    right: -10%;
+    width: 600px; height: 600px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(232,162,55,0.07) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .hero-label {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--amber);
+    margin-bottom: 2rem;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    opacity: 0;
+    animation: fadeUp 0.8s 0.2s forwards;
+  }
+  .hero-label::before {
+    content: '';
+    display: block;
+    width: 32px; height: 1px;
+    background: var(--amber);
+  }
+
+  .hero-title {
+    font-size: clamp(3.5rem, 8vw, 7.5rem);
+    font-weight: 800;
+    line-height: 0.95;
+    letter-spacing: -0.025em;
+    max-width: 900px;
+    opacity: 0;
+    animation: fadeUp 0.9s 0.35s forwards;
+  }
+
+  .hero-title em {
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-weight: 400;
+    color: var(--amber);
+  }
+
+  .hero-bottom {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    margin-top: 3rem;
+    opacity: 0;
+    animation: fadeUp 0.9s 0.55s forwards;
+  }
+
+  .hero-tagline {
+    font-size: 1rem;
+    color: var(--text-secondary);
+    max-width: 380px;
+    line-height: 1.7;
+    font-weight: 400;
+  }
+
+  .hero-slogan {
+    text-align: right;
+  }
+  .hero-slogan .think {
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    text-decoration: line-through;
+    display: block;
+    letter-spacing: 0.06em;
+  }
+  .hero-slogan .know {
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    color: var(--amber);
+    display: block;
+    letter-spacing: 0.06em;
+  }
+  .arrow-down {
+    display: block;
+    margin-top: 0.5rem;
+    font-size: 1.2rem;
+    color: var(--amber);
+    animation: bounce 2s infinite;
+  }
+
+  /* MARQUEE */
+  .marquee-strip {
+    overflow: hidden;
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    padding: 1rem 0;
+    white-space: nowrap;
+    background: var(--bg-2);
+  }
+  .marquee-track {
+    display: inline-flex;
+    gap: 3rem;
+    animation: marquee 25s linear infinite;
+  }
+  .marquee-item {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+  .marquee-item .dot {
+    width: 4px; height: 4px;
+    border-radius: 50%;
+    background: var(--amber);
+    flex-shrink: 0;
+  }
+
+  /* SECTION BASE */
+  section {
+    padding: 8rem 3rem;
+    position: relative;
+  }
+
+  .section-label {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--amber);
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .section-label::before {
+    content: attr(data-num);
+    color: var(--text-muted);
+    font-size: 0.65rem;
+  }
+
+  .section-title {
+    font-size: clamp(2.2rem, 4vw, 3.5rem);
+    font-weight: 700;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    margin-bottom: 1.5rem;
+  }
+  .section-title em {
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-weight: 400;
+  }
+
+  /* ABOUT */
+  .about {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6rem;
+    align-items: center;
+  }
+  .about-text p {
+    font-size: 1.05rem;
+    color: var(--text-secondary);
+    margin-bottom: 1.5rem;
+    line-height: 1.8;
+    font-weight: 400;
+  }
+  .about-text p strong {
+    color: var(--text-primary);
+    font-weight: 600;
+  }
+  .about-visual {
+    position: relative;
+    height: 400px;
+  }
+  .about-diagram {
+    width: 100%; height: 100%;
+  }
+
+  /* PROCESS */
+  .process-section { background: var(--bg-2); }
+  .process-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0;
+    margin-top: 4rem;
+    border: 1px solid var(--border);
+  }
+  .process-step {
+    padding: 2.5rem 2rem;
+    border-right: 1px solid var(--border);
+    position: relative;
+    overflow: hidden;
+    transition: background 0.3s;
+  }
+  .process-step:last-child { border-right: none; }
+  .process-step:hover { background: var(--bg-3); }
+  .process-step::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: var(--amber);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.35s ease;
+  }
+  .process-step:hover::before { transform: scaleX(1); }
+  .step-num {
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+    color: var(--text-muted);
+    letter-spacing: 0.14em;
+    margin-bottom: 1.5rem;
+  }
+  .step-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin-bottom: 0.75rem;
+    letter-spacing: -0.01em;
+  }
+  .step-desc {
+    font-size: 0.88rem;
+    color: var(--text-secondary);
+    line-height: 1.7;
+    font-weight: 400;
+  }
+
+  /* PRODUCTS */
+  .products-header {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    margin-bottom: 4rem;
+  }
+  .products-note {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    font-family: var(--font-mono);
+    letter-spacing: 0.06em;
+  }
+  .products-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+  }
+  .product-card {
+    background: var(--bg);
+    padding: 2.5rem;
+    position: relative;
+    overflow: hidden;
+    transition: background 0.3s;
+  }
+  .product-card:hover { background: var(--bg-3); }
+  .product-card.featured {
+    grid-column: span 2;
+    background: var(--bg-2);
+  }
+  .product-badge {
+    display: inline-block;
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 0.3rem 0.75rem;
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    margin-bottom: 1.5rem;
+    color: var(--text-muted);
+  }
+  .product-badge.active {
+    border-color: var(--amber);
+    color: var(--amber);
+    background: var(--amber-dim);
+  }
+  .product-name {
+    font-size: 1.4rem;
+    font-weight: 700;
+    margin-bottom: 0.75rem;
+    letter-spacing: -0.02em;
+  }
+  .product-desc {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    line-height: 1.75;
+    font-weight: 400;
+  }
+  .product-arrow {
+    position: absolute;
+    bottom: 2.5rem; right: 2.5rem;
+    width: 40px; height: 40px;
+    border: 1px solid var(--border);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-muted);
+    font-size: 1rem;
+    transition: border-color 0.2s, color 0.2s, transform 0.2s;
+  }
+  .product-card:hover .product-arrow {
+    border-color: var(--amber);
+    color: var(--amber);
+    transform: translate(3px, -3px);
+  }
+
+  /* PHILOSOPHY */
+  .philosophy-section {
+    background: var(--amber);
+    color: #0a0a0b;
+    padding: 6rem 3rem;
+    text-align: center;
+  }
+  .philosophy-section .philosophy-quote {
+    font-family: var(--font-serif);
+    font-size: clamp(2rem, 4.5vw, 3.8rem);
+    font-style: italic;
+    font-weight: 400;
+    line-height: 1.25;
+    max-width: 900px;
+    margin: 0 auto 2rem;
+    letter-spacing: -0.01em;
+    color: #0a0a0b;
+  }
+  .philosophy-section .attr {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: rgba(10,10,11,0.5);
+  }
+
+  /* TEAM */
+  .team-section { background: var(--bg-2); }
+  .team-intro {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 6rem;
+    align-items: start;
+    margin-bottom: 4rem;
+  }
+  .team-intro p {
+    font-size: 1rem;
+    color: var(--text-secondary);
+    line-height: 1.8;
+    font-weight: 400;
+  }
+  .team-values {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    border: 1px solid var(--border);
+  }
+  .team-value {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    padding: 1.5rem 2rem;
+    border-bottom: 1px solid var(--border);
+    transition: background 0.2s;
+  }
+  .team-value:last-child { border-bottom: none; }
+  .team-value:hover { background: var(--bg-3); }
+  .value-icon {
+    font-size: 1.2rem;
+    width: 40px;
+    flex-shrink: 0;
+    text-align: center;
+  }
+  .value-name {
+    font-size: 0.95rem;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    margin-bottom: 0.15rem;
+  }
+  .value-desc {
+    font-size: 0.82rem;
+    color: var(--text-secondary);
+    font-weight: 400;
+  }
+
+  /* CTA */
+  .cta-section {
+    padding: 10rem 3rem;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .cta-bg-glow {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse 60% 50% at 50% 50%, rgba(232,162,55,0.06) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .cta-label {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--amber);
+    margin-bottom: 1.5rem;
+  }
+  .cta-title {
+    font-size: clamp(2.5rem, 5vw, 4.5rem);
+    font-weight: 800;
+    line-height: 1.05;
+    letter-spacing: -0.025em;
+    margin-bottom: 1.5rem;
+  }
+  .cta-title em {
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-weight: 400;
+  }
+  .cta-sub {
+    color: var(--text-secondary);
+    font-size: 1rem;
+    max-width: 460px;
+    margin: 0 auto 3rem;
+    font-weight: 400;
+  }
+  .btn-group { display: flex; gap: 1rem; justify-content: center; }
+  .btn-primary {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 0.85rem 2rem;
+    background: var(--amber);
+    color: #0a0a0b;
+    font-family: var(--font-display);
+    font-size: 0.85rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-decoration: none;
+    border: none;
+    cursor: none;
+    transition: opacity 0.2s, transform 0.2s;
+  }
+  .btn-primary:hover { opacity: 0.9; transform: translateY(-1px); }
+  .btn-secondary {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 0.85rem 2rem;
+    background: transparent;
+    color: var(--text-primary);
+    font-family: var(--font-display);
+    font-size: 0.85rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-decoration: none;
+    border: 1px solid var(--border-hover);
+    cursor: none;
+    transition: border-color 0.2s, background 0.2s, transform 0.2s;
+  }
+  .btn-secondary:hover {
+    border-color: var(--amber);
+    background: var(--amber-dim);
+    transform: translateY(-1px);
+  }
+
+  /* FOOTER */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 3rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .footer-logo {
+    font-size: 0.85rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--text-primary);
+  }
+  .footer-copy {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    letter-spacing: 0.08em;
+  }
+  .footer-links {
+    display: flex;
+    gap: 2rem;
+    list-style: none;
+  }
+  .footer-links a {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+  .footer-links a:hover { color: var(--amber); }
+
+  /* ANIMATIONS */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes marquee {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+  }
+  @keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(6px); }
+  }
+  @keyframes spin-slow {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+
+  .reveal {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+  .reveal.visible {
+    opacity: 1;
+    transform: none;
+  }
+  .reveal-delay-1 { transition-delay: 0.1s; }
+  .reveal-delay-2 { transition-delay: 0.2s; }
+  .reveal-delay-3 { transition-delay: 0.3s; }
+  .reveal-delay-4 { transition-delay: 0.4s; }
+
+  /* DIVIDER */
+  .divider {
+    width: 100%;
+    height: 1px;
+    background: var(--border);
+  }
+
+  @media (max-width: 900px) {
+    nav { padding: 1.5rem 1.5rem; }
+    .nav-links { display: none; }
+    section { padding: 5rem 1.5rem; }
+    .hero { padding: 0 1.5rem 4rem; }
+    .about { grid-template-columns: 1fr; gap: 3rem; }
+    .about-visual { height: 260px; }
+    .process-grid { grid-template-columns: 1fr 1fr; }
+    .process-step { border-bottom: 1px solid var(--border); }
+    .products-grid { grid-template-columns: 1fr; }
+    .product-card.featured { grid-column: span 1; }
+    .team-intro { grid-template-columns: 1fr; gap: 2rem; }
+    .btn-group { flex-direction: column; align-items: center; }
+    footer { flex-direction: column; gap: 1.5rem; text-align: center; }
+    .footer-links { justify-content: center; }
+    .products-header { flex-direction: column; align-items: flex-start; gap: 0.5rem; }
+    .hero-bottom { flex-direction: column; gap: 2rem; align-items: flex-start; }
+    .hero-slogan { text-align: left; }
+  }
+</style>
+</head>
+<body>
+
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<!-- NAV -->
+<nav id="nav">
+  <a href="#" class="nav-logo">
+    <div class="logo-mark">
+      <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect x="1" y="1" width="30" height="30" stroke="#e8a237" stroke-width="1"/>
+        <rect x="8" y="8" width="8" height="8" fill="#e8a237"/>
+        <rect x="16" y="16" width="8" height="8" fill="#e8a237" opacity="0.5"/>
+        <line x1="16" y1="1" x2="16" y2="31" stroke="#e8a237" stroke-width="0.5" opacity="0.3"/>
+        <line x1="1" y1="16" x2="31" y2="16" stroke="#e8a237" stroke-width="0.5" opacity="0.3"/>
+      </svg>
+    </div>
+    <span class="logo-text">Noventra Labs</span>
+  </a>
+  <ul class="nav-links">
+    <li><a href="#about">About</a></li>
+    <li><a href="#process">Process</a></li>
+    <li><a href="#products">Products</a></li>
+    <li><a href="#join" class="nav-cta">Join Us</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section class="hero" id="hero">
+  <div class="hero-grid-bg"></div>
+  <div class="hero-accent"></div>
+
+  <div class="hero-label" data-num="">
+    Open Source · Market Intelligence · Product Labs
+  </div>
+
+  <h1 class="hero-title">
+    We ship<br>what the<br>market <em>needs.</em>
+  </h1>
+
+  <div class="hero-bottom">
+    <p class="hero-tagline">
+      Noventra Labs is a GitHub org that identifies real gaps between what users need and what exists — then builds and ships the products to fill them.
+    </p>
+    <div class="hero-slogan">
+      <span class="think">"we think"</span>
+      <span class="know">"we know" ↗</span>
+      <span class="arrow-down">↓</span>
+    </div>
+  </div>
+</section>
+
+<!-- MARQUEE -->
+<div class="marquee-strip">
+  <div class="marquee-track">
+    <span class="marquee-item"><span class="dot"></span> Gap Analysis</span>
+    <span class="marquee-item"><span class="dot"></span> Open Source</span>
+    <span class="marquee-item"><span class="dot"></span> Ship Fast</span>
+    <span class="marquee-item"><span class="dot"></span> Market Research</span>
+    <span class="marquee-item"><span class="dot"></span> Evidence-Driven</span>
+    <span class="marquee-item"><span class="dot"></span> Community First</span>
+    <span class="marquee-item"><span class="dot"></span> Build in Public</span>
+    <span class="marquee-item"><span class="dot"></span> Validated Ideas</span>
+    <span class="marquee-item"><span class="dot"></span> Gap Analysis</span>
+    <span class="marquee-item"><span class="dot"></span> Open Source</span>
+    <span class="marquee-item"><span class="dot"></span> Ship Fast</span>
+    <span class="marquee-item"><span class="dot"></span> Market Research</span>
+    <span class="marquee-item"><span class="dot"></span> Evidence-Driven</span>
+    <span class="marquee-item"><span class="dot"></span> Community First</span>
+    <span class="marquee-item"><span class="dot"></span> Build in Public</span>
+    <span class="marquee-item"><span class="dot"></span> Validated Ideas</span>
+  </div>
+</div>
+
+<!-- ABOUT -->
+<section id="about">
+  <div class="about">
+    <div class="about-text reveal">
+      <div class="section-label" data-num="01 —">What we do</div>
+      <h2 class="section-title">Ideas die in<br>the <em>assumption</em> phase.</h2>
+      <p>
+        Most teams build what they <strong>imagine</strong> is needed. Noventra Labs builds what data <strong>proves</strong> is missing. We scan ecosystems, study user pain, and identify gaps that are real, recurring, and underserved.
+      </p>
+      <p>
+        Then we build. Fast, open, and collaboratively — as a GitHub org where contributors are co-builders, not just committers.
+      </p>
+    </div>
+    <div class="about-visual reveal reveal-delay-2">
+      <svg class="about-diagram" viewBox="0 0 480 400" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <!-- Grid lines -->
+        <line x1="0" y1="100" x2="480" y2="100" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>
+        <line x1="0" y1="200" x2="480" y2="200" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>
+        <line x1="0" y1="300" x2="480" y2="300" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>
+        <line x1="120" y1="0" x2="120" y2="400" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>
+        <line x1="240" y1="0" x2="240" y2="400" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>
+        <line x1="360" y1="0" x2="360" y2="400" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>
+
+        <!-- Supply curve -->
+        <path d="M 40 340 Q 160 280 280 180 T 460 60" stroke="rgba(255,255,255,0.2)" stroke-width="1.5" stroke-dasharray="4,4"/>
+        <!-- Demand curve -->
+        <path d="M 40 80 Q 160 140 280 220 T 460 340" stroke="rgba(255,255,255,0.2)" stroke-width="1.5" stroke-dasharray="4,4"/>
+
+        <!-- GAP zone -->
+        <path d="M 180 120 Q 240 200 300 280" stroke="rgba(232,162,55,0.0)" fill="none"/>
+        <ellipse cx="240" cy="200" rx="55" ry="80" fill="rgba(232,162,55,0.08)" stroke="#e8a237" stroke-width="1"/>
+
+        <!-- Gap label -->
+        <text x="240" y="194" font-family="'DM Mono', monospace" font-size="9" fill="#e8a237" text-anchor="middle" letter-spacing="2" text-transform="uppercase">THE</text>
+        <text x="240" y="210" font-family="'DM Mono', monospace" font-size="9" fill="#e8a237" text-anchor="middle" letter-spacing="2">GAP</text>
+
+        <!-- Labels -->
+        <text x="460" y="55" font-family="'DM Mono', monospace" font-size="9" fill="rgba(255,255,255,0.3)" text-anchor="end">Supply</text>
+        <text x="460" y="350" font-family="'DM Mono', monospace" font-size="9" fill="rgba(255,255,255,0.3)" text-anchor="end">Demand</text>
+
+        <!-- Nodes -->
+        <circle cx="240" cy="200" r="4" fill="#e8a237"/>
+        <circle cx="80" cy="310" r="3" fill="rgba(255,255,255,0.15)"/>
+        <circle cx="160" cy="250" r="3" fill="rgba(255,255,255,0.15)"/>
+        <circle cx="320" cy="150" r="3" fill="rgba(255,255,255,0.15)"/>
+        <circle cx="400" cy="90" r="3" fill="rgba(255,255,255,0.15)"/>
+
+        <!-- Arrows pointing to gap -->
+        <line x1="90" y1="160" x2="185" y2="195" stroke="rgba(232,162,55,0.3)" stroke-width="1"/>
+        <polygon points="185,195 176,188 180,197" fill="rgba(232,162,55,0.5)"/>
+        <text x="55" y="155" font-family="'Syne', sans-serif" font-size="10" fill="rgba(255,255,255,0.4)" font-weight="600">Opportunity</text>
+
+        <!-- Axes -->
+        <line x1="30" y1="370" x2="460" y2="370" stroke="rgba(255,255,255,0.1)" stroke-width="1"/>
+        <line x1="30" y1="30" x2="30" y2="370" stroke="rgba(255,255,255,0.1)" stroke-width="1"/>
+        <text x="245" y="395" font-family="'DM Mono', monospace" font-size="8" fill="rgba(255,255,255,0.2)" text-anchor="middle">Market Maturity →</text>
+        <text x="15" y="200" font-family="'DM Mono', monospace" font-size="8" fill="rgba(255,255,255,0.2)" text-anchor="middle" transform="rotate(-90 15 200)">Need Intensity →</text>
+      </svg>
+    </div>
+  </div>
+</section>
+
+<!-- PROCESS -->
+<section id="process" class="process-section">
+  <div class="reveal">
+    <div class="section-label" data-num="02 —">How we work</div>
+    <h2 class="section-title">Four moves from <em>signal</em> to shipped.</h2>
+  </div>
+  <div class="process-grid">
+    <div class="process-step reveal reveal-delay-1">
+      <div class="step-num">01 / SCAN</div>
+      <div class="step-title">Find the signal</div>
+      <p class="step-desc">We mine Reddit threads, GitHub issues, ProductHunt comments, and forum complaints to surface recurring unmet needs with quantifiable frustration.</p>
+    </div>
+    <div class="process-step reveal reveal-delay-2">
+      <div class="step-num">02 / VALIDATE</div>
+      <div class="step-title">Prove it's real</div>
+      <p class="step-desc">Before a single line of code, we validate demand. Surveys, landing page tests, community polls — we don't guess, we measure.</p>
+    </div>
+    <div class="process-step reveal reveal-delay-3">
+      <div class="step-num">03 / BUILD</div>
+      <div class="step-title">Ship in the open</div>
+      <p class="step-desc">Repos go public from day one. We build fast, iterate with community feedback, and document our decisions — no black boxes.</p>
+    </div>
+    <div class="process-step reveal reveal-delay-4">
+      <div class="step-num">04 / ITERATE</div>
+      <div class="step-title">Listen and improve</div>
+      <p class="step-desc">Every product is a conversation. Usage data and user feedback drive our roadmap — not internal assumptions or stakeholder wishes.</p>
+    </div>
+  </div>
+</section>
+
+<!-- PHILOSOPHY BREAK -->
+<div class="philosophy-section">
+  <p class="philosophy-quote">
+    "The best products aren't invented — they're discovered in the gap between what exists and what's genuinely needed."
+  </p>
+  <span class="attr">— Noventra Labs founding principle</span>
+</div>
+
+<!-- PRODUCTS -->
+<section id="products">
+  <div class="products-header reveal">
+    <div>
+      <div class="section-label" data-num="03 —">What we're building</div>
+      <h2 class="section-title">Active <em>initiatives.</em></h2>
+    </div>
+    <span class="products-note">Updated as we ship →</span>
+  </div>
+  <div class="products-grid reveal reveal-delay-1">
+    <div class="product-card featured">
+      <span class="product-badge active">● In Progress</span>
+      <div class="product-name">Gap Scanner</div>
+      <p class="product-desc">An open-source tool that aggregates feedback signals from forums, social platforms, and app stores to surface high-confidence market gaps with supporting evidence — not vibes.</p>
+      <div class="product-arrow">↗</div>
+    </div>
+    <div class="product-card">
+      <span class="product-badge">Coming Soon</span>
+      <div class="product-name">Idea Validator</div>
+      <p class="product-desc">Lightweight validation framework: landing pages, surveys, and waitlists in minutes. Find out if your gap is worth filling before building.</p>
+      <div class="product-arrow">↗</div>
+    </div>
+    <div class="product-card">
+      <span class="product-badge">Research</span>
+      <div class="product-name">Ecosystem Maps</div>
+      <p class="product-desc">Visual, open-access maps of product categories showing incumbents, whitespace, and emerging opportunities.</p>
+      <div class="product-arrow">↗</div>
+    </div>
+    <div class="product-card">
+      <span class="product-badge">Research</span>
+      <div class="product-name">Labs Reports</div>
+      <p class="product-desc">Published research on gap findings — openly shared so the community can build on our analysis, even if we don't.</p>
+      <div class="product-arrow">↗</div>
+    </div>
+  </div>
+</section>
+
+<!-- VALUES -->
+<section id="join" class="team-section">
+  <div class="team-intro reveal">
+    <div>
+      <div class="section-label" data-num="04 —">Who we are</div>
+      <h2 class="section-title">Built by<br><em>builders.</em></h2>
+    </div>
+    <p>
+      Noventra Labs is a GitHub organization — not a startup with investors, not a VC thesis. It's a collective of people who prefer evidence over assumptions and shipping over theorizing.<br><br>
+      We welcome contributors who want to build things that <strong style="color:var(--text-primary);">actually get used</strong> — researchers, designers, engineers, and curious problem-finders.
+    </p>
+  </div>
+  <div class="team-values reveal reveal-delay-1">
+    <div class="team-value">
+      <div class="value-icon">◈</div>
+      <div>
+        <div class="value-name">Evidence over intuition</div>
+        <div class="value-desc">We trust data. Every assumption gets tested before it becomes a build decision.</div>
+      </div>
+    </div>
+    <div class="team-value">
+      <div class="value-icon">◈</div>
+      <div>
+        <div class="value-name">Radical openness</div>
+        <div class="value-desc">Research, code, decisions — all public. We build trust by building in the open.</div>
+      </div>
+    </div>
+    <div class="team-value">
+      <div class="value-icon">◈</div>
+      <div>
+        <div class="value-name">Shipping over planning</div>
+        <div class="value-desc">A working prototype beats a perfect roadmap every time. We move fast and adjust.</div>
+      </div>
+    </div>
+    <div class="team-value">
+      <div class="value-icon">◈</div>
+      <div>
+        <div class="value-name">Community as co-founder</div>
+        <div class="value-desc">The people who use what we build shape where we go next. No exceptions.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section">
+  <div class="cta-bg-glow"></div>
+  <div class="reveal">
+    <div class="cta-label">/ Join the org</div>
+    <h2 class="cta-title">Stop thinking.<br>Start <em>knowing.</em></h2>
+    <p class="cta-sub">Contribute to our repos, collaborate on research, or propose a gap worth investigating. We're just getting started.</p>
+    <div class="btn-group">
+      <a href="https://github.com" class="btn-primary">View on GitHub ↗</a>
+      <a href="mailto:hello@noventralabs.dev" class="btn-secondary">Get in touch</a>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <span class="footer-logo">Noventra Labs</span>
+  <ul class="footer-links">
+    <li><a href="https://github.com">GitHub</a></li>
+    <li><a href="#">Research</a></li>
+    <li><a href="#">Contact</a></li>
+  </ul>
+  <span class="footer-copy">© 2025 Noventra Labs · Open Source</span>
+</footer>
+
+<script>
+  // CURSOR
+  const cursor = document.getElementById('cursor');
+  const ring = document.getElementById('cursorRing');
+  let mx = 0, my = 0, rx = 0, ry = 0;
+  document.addEventListener('mousemove', e => {
+    mx = e.clientX; my = e.clientY;
+    cursor.style.left = mx - 4 + 'px';
+    cursor.style.top = my - 4 + 'px';
+  });
+  function animateRing() {
+    rx += (mx - rx) * 0.12;
+    ry += (my - ry) * 0.12;
+    ring.style.left = rx - 16 + 'px';
+    ring.style.top = ry - 16 + 'px';
+    requestAnimationFrame(animateRing);
+  }
+  animateRing();
+
+  // NAV SCROLL
+  const nav = document.getElementById('nav');
+  window.addEventListener('scroll', () => {
+    nav.classList.toggle('scrolled', window.scrollY > 60);
+  });
+
+  // REVEAL ON SCROLL
+  const reveals = document.querySelectorAll('.reveal');
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('visible');
+        observer.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.12 });
+  reveals.forEach(el => observer.observe(el));
+</script>
+</body>
+</html>
